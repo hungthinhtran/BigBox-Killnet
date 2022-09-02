@@ -3,9 +3,9 @@ import optparse
 import time
 import subprocess
 
-#1)arp_request
-#2)broadcast
-#3)response
+# Hi! My name is Big Box
+# Hope you guys enjoy the tool
+
 
 def get_user_input():
     parse_object = optparse.OptionParser()
@@ -42,11 +42,8 @@ else:
 
 def scan_my_network():
     arp_request_packet = scapy.ARP(pdst=f"{IP_RANGE}")
-    #scapy.ls(scapy.ARP())
     broadcast_packet = scapy.Ether(dst="ff:ff:ff:ff:ff:ff")
-    #scapy.ls(scapy.Ether())
     Fusion = broadcast_packet/arp_request_packet
-    #answered_list = scapy.srp(Fusion,timeout=3)[0]  
     (answered_list,unanswered_list) = scapy.srp(Fusion,timeout=3)
     answered_list.summary()
     time.sleep(1)
