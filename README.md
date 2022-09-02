@@ -1,5 +1,17 @@
 # BigBox-Killnet
 # This tool can use for cutting down the Internet of the target that is in the same network as you
+# Require: 
+   
+   sudo python3 -m pip install subprocess.run
+   
+   sudo apt-get update
+   
+   sudo apt-get install python3-pip
+   
+   sudo python3 -m pip install --pre scapy[complete]
+   
+   sudo python3 -m pip install optparse-pretty
+   
 # Usage:
 
 1. Network scanner (see targets in the same network)
