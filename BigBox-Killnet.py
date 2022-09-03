@@ -30,7 +30,7 @@ KILLMODE = User_input.ON_OFF
 def Killmode():
      return subprocess.call(f"echo {KILLMODE} > /proc/sys/net/ipv4/ip_forward", shell=True)
     
-if KILLMODE == "1":
+if KILLMODE == "0":
     print("Shut down target's network: ON")
     Killmode()
     time.sleep(1)
