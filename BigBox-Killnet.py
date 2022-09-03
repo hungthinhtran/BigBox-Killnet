@@ -36,7 +36,7 @@ if KILLMODE == "0":
     time.sleep(1)
 else:
     print("Shut down target's network: OFF")    
-    subprocess.call("echo 0 > /proc/sys/net/ipv4/ip_forward", shell=True)
+    subprocess.call("echo 1 > /proc/sys/net/ipv4/ip_forward", shell=True)
     time.sleep(1)
 
 
@@ -80,4 +80,4 @@ try:
             fullduplex()
 
 except ValueError:
-        print("Oops!  That was no valid number.  Try again...") 
+        print("That was no valid number. Please try again") 
