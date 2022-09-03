@@ -16,7 +16,7 @@
 
 1. Network scanner (see targets in the same network)
 
-   python3 BigBox-Killnet.py -i <IP range>
+   python3 BigBox-Killnet.py -i <IP_range>
    
    Ex: python3 BigBox-Killnet.py -i 192.168.1.0/24
 
