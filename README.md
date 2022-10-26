@@ -1,10 +1,5 @@
 # BigBox-Killnet
- ____  _       ____              _  ___ _ _            _   
-| __ )(_) __ _| __ )  _____  __ | |/ (_) | |_ __   ___| |_ 
-|  _ \| |/ _` |  _ \ / _ \ \/ / | ' /| | | | '_ \ / _ \ __|
-| |_) | | (_| | |_) | (_) >  <  | . \| | | | | | |  __/ |_ 
-|____/|_|\__, |____/ \___/_/\_\ |_|\_\_|_|_|_| |_|\___|\__|
-         |___/                                           
+
 
 # This tool can use for:
   + cutting down the Internet of the target that is in the same network as you
